@@ -1,29 +1,6 @@
 from database import get_db
 import mysql.connector
 
-def listMovies():
-    conn = None
-    cursor = None
-    try:
-        # 1. Conectamos con mysql
-        conn = get_db()
-        # 2. Pedimos las tablas en forma de diccionario
-        cursor = conn.cursor(dictionary=True)
-        # 3. Crear la consulta a mysql
-        query = "SELECT * FROM peliculas;"
-        # 4. Ejecutar la consulta
-        cursor.execute(query)
-        # 5. Recibir las tablas
-        rows = cursor.fetchall() # Obtiene todas las filas
-        # 6. Retornar la información
-        return rows
-    except mysql.connector.Error as err:
-        print("Error al traer peliculas ", err)
-        return []
-    finally:
-        if cursor: cursor.close()
-        if conn: conn.close()
-
 # Obtener una pelicula por su id
 def get_movie_by_id(id):
     conn = None
@@ -42,7 +19,8 @@ def get_movie_by_id(id):
         if conn: conn.close()
 
 # Obtener peliculas con filtros personalizados
-def get_movies_by_filter(genre=None, year_from=None, year_to=None, min_rating=None):
+def get_movies_by_filter(genre=None, year_from=None, year_to=None, 
+        min_rating=None, order_by=None, desc=None):
     conn = None
     cursor = None
     try:
@@ -69,6 +47,13 @@ def get_movies_by_filter(genre=None, year_from=None, year_to=None, min_rating=No
         if parts:
             query += " WHERE " + " OR ".join(parts)
 
+        if order_by in ["titulo", "anio", "genero", "rating", "director"]:
+            # print(type(desc))
+            if desc == "True":
+                query += f" ORDER BY {order_by} DESC"
+            else:
+                query += f" ORDER BY {order_by}"
+
         # print(query)
 
         cursor.execute(query, tuple(params))
@@ -76,6 +61,28 @@ def get_movies_by_filter(genre=None, year_from=None, year_to=None, min_rating=No
         return rows
     except mysql.connector.Error as err:
         print("Error con los filtros ", {err})
+    finally:
+        if cursor: cursor.close()
+        if conn: conn.close()
+
+def create_movie(titulo, director, anio, rating, genero, imagen):
+    conn = None
+    cursor = None
+    try:
+        conn = get_db()
+        cursor = conn.cursor()
+        cursor.execute("""
+            INSERT INTO peliculas (titulo, director, anio, rating, genero, imagen)
+            VALUES (%s, %s, %s, %s, %s, %s)
+            """,
+            (titulo, director, anio, rating, genero, imagen)
+        )
+        conn.commit()
+        last_id = cursor.lastrowid # Devuelve el ultimo ID
+        return last_id
+    except mysql.connector.Error as error:
+        print("Error al crear película ", {err})
+        return None
     finally:
         if cursor: cursor.close()
         if conn: conn.close()
