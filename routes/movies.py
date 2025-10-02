@@ -1,4 +1,4 @@
-from models.movie_model import create_movie, get_movie_by_id, get_movies_by_filter
+from models.movie_model import create_movie, delete_movie, get_movie_by_id, get_movies_by_filter, update_movie
 from flask import Blueprint, request, jsonify
 
 movies_bp = Blueprint("movies", __name__)
@@ -53,3 +53,52 @@ def add_movie():
         "message": "Película registrada",
         "id": new_id
     }), 201
+
+@movies_bp.route("/<int:id>", methods=["PUT"])
+def edit_movie(id):
+    data = request.json
+    movie = get_movie_by_id(id)
+    
+    if not movie:
+        return jsonify({
+            "message": "Película no encontrada"
+        }), 404
+    
+    titulo = data.get("titulo")
+    director = data.get("director")
+    anio = data.get("anio")
+    rating = data.get("rating")
+    genero = data.get("genero")
+    imagen = data.get("imagen")
+    
+    if rating is None and rating not in (None, ""):
+        return jsonify({
+            "message": "Rating debe ser número válido"
+        }), 400
+    
+    result = update_movie(id, titulo, director, anio, rating, genero, imagen)
+    if result:
+        return jsonify({
+            "message": "Película actualizada"
+        })
+    else:
+        return jsonify({
+            "error": "Faltan valores"
+        }), 400
+    
+@movies_bp.route("/<int:id>", methods=["DELETE"])
+def remove_movie(id):
+    movie = get_movie_by_id(id)
+    if not movie:
+        return jsonify({
+            "message": "Película no encontrada"
+        }), 404
+    
+    if delete_movie(id):
+        return jsonify({
+            "message": "Película eliminada"
+        })
+    else:
+        return jsonify({
+            "message": "Error al eliminar película"
+        }), 400

@@ -80,9 +80,48 @@ def create_movie(titulo, director, anio, rating, genero, imagen):
         conn.commit()
         last_id = cursor.lastrowid # Devuelve el ultimo ID
         return last_id
-    except mysql.connector.Error as error:
+    except mysql.connector.Error as err:
         print("Error al crear película ", {err})
         return None
+    finally:
+        if cursor: cursor.close()
+        if conn: conn.close()
+
+def update_movie(id, titulo, director, anio, rating, genero, imagen):
+    conn = None
+    cursor = None
+    try:
+        conn = get_db()
+        cursor = conn.cursor()
+        cursor.execute(
+            """
+            UPDATE peliculas
+            SET titulo=%s, director=%s, anio=%s, rating=%s, genero=%s, imagen=%s
+            WHERE id=%s
+            """,
+            (titulo, director, anio, rating, genero, imagen, id)
+        )
+        conn.commit()
+        return cursor.rowcount > 0
+    except mysql.connector.Error as err:
+        print("Error al actualizar ", {err})
+        return False
+    finally:
+        if cursor: cursor.close()
+        if conn: conn.close()
+
+def delete_movie(id):
+    conn = None
+    cursor = None
+    try:
+        conn = get_db()
+        cursor = conn.cursor()
+        cursor.execute("DELETE FROM peliculas WHERE id=%s", (id,))
+        conn.commit()
+        return cursor.rowcount > 0
+    except mysql.connector.Error as err:
+        print("Error al eliminar ", {err})
+        return False
     finally:
         if cursor: cursor.close()
         if conn: conn.close()
