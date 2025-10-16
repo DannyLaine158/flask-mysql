@@ -42,7 +42,7 @@ async function loadMovies() {
             <td>
                 <button onclick='editMovie(${m.id})' 
                     class='button m-2 is-warning'>Editar</button>
-                <button 
+                <button onclick='deleteMovie(${m.id})'
                     class='button m-2 is-danger'>Eliminar</button>
             </td>
         `;
@@ -52,6 +52,15 @@ async function loadMovies() {
 }
 
 // Eliminar películas
+async function deleteMovie(id) {
+    if (!confirm("¿Seguro que quieres eliminar esta película?")) return;
+
+    const res = await fetch(API_URL + "/" + id, { method: "DELETE" });
+    const data = await res.json();
+    alert(data.message);
+
+    loadMovies();
+}
 
 // Editar películas
 function editMovie(id) {
@@ -64,6 +73,31 @@ async function initForm() {
     const movieId = params.get("id");
 
     const form = document.getElementById("movie-form");
+    form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        // Preparación para enviar la película
+        const formData = new FormData(form);
+        const movie = Object.fromEntries(formData);
+
+
+        const fileInput = document.getElementById("imagen");
+        if (fileInput.files.length > 0)
+            movie.imagen = await toBase64(fileInput.files[0]);
+
+        let url = API_URL + "/" + movieId;
+        let method = "PUT";
+
+        const res = await fetch(url, {
+            method,
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(movie)
+        });
+
+        const data = await res.json();
+        alert(data.message);
+        window.location.href = "index.html";
+    });
     
     if (movieId) {
         document.getElementById("form-title").textContent = "Editar pelicula";
@@ -78,6 +112,19 @@ async function initForm() {
         form.genero.value = movie.genero;
         form.rating.value = movie.rating;
     }
+}
+
+// Convertir el archivo en cadena de texto
+function toBase64(file) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        // Obtenemos el archivo
+        reader.onload = () => resolve(reader.result.split(",")[1]);
+
+        // Si hubo un error, se devuelve aquí
+        reader.onerror = reject;
+    });
 }
 
 // Crear películas

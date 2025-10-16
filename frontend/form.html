@@ -74,6 +74,15 @@
 
                 <input type="hidden" id="movie-id">
 
+                <div class="field" id="preview-field" style="display: none;">
+                    <label for="label">Preview</label>
+                    <div class="control">
+                        <figure class="image is-128x128">
+                            <img src="" id="imagen-preview" class="is-rounded" alt="Preview Imagen">
+                        </figure>
+                    </div>
+                </div>
+
                 <div class="field has-text-centered mt-5">
                     <button type="submit" class="button is-primary is-medium">
                         <span>Guardar</span>
@@ -88,7 +97,18 @@
 
     <script src="main.js"></script>
     <script>
-        document.addEventListener("DOMContentLoaded", initForm);
+        document.addEventListener("DOMContentLoaded", () => {
+            const fileInput = document.querySelector("#imagen");
+            const fileName = document.querySelector("#file-name");
+            fileInput.addEventListener("change", () => {
+
+                // Operador ternario (de if)
+                fileName.textContent = fileInput.files.length > 0
+                    ? fileInput.files[0].name
+                    : "Ningun archivo seleccionado";
+            });
+            initForm();
+        });
     </script>
 </body>
 </html>
