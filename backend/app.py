@@ -1,27 +1,25 @@
 from flask import Flask
+from flask_cors import CORS
 from routes.movies import movies_bp
-from database import get_db
+from database import get_db_connection
 
-# Instancia de Flask
 app = Flask(__name__)
+CORS(app)
 
-# Registro de blueprints:
 app.register_blueprint(movies_bp, url_prefix="/movies")
 
-# Endpoint root
 @app.route("/")
 def hello():
     try:
-        conn = get_db()
+        conn = get_db_connection()
         cursor = conn.cursor()
-        # Comando de prueba
-        cursor.execute("SELECT NOW();")
-        result = cursor.fetchone() # Esperamos 1 fila
-        return { "time": str(result[0]) }
+        cursor.execute("SELECT NOW()")  # comando de prueba
+        result = cursor.fetchone()
+        conn.close()
+        return {"status": "ok", "db_time": str(result[0])}
     except Exception as e:
-        return { "error": str(e) }
-    # return {"Hola": "Este es un saludo"}
+        return {"status": "error", "message": str(e)}
+    # return {"Clave": "API Películas: /movies"}
 
-# Punto de partida:
 if __name__ == "__main__":
     app.run(debug=True)

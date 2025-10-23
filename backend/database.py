@@ -1,26 +1,17 @@
-import os # Hacer funcionar cosas del sistema operativo
+import os
 import mysql.connector
 from mysql.connector import Error
 from dotenv import load_dotenv
 
-load_dotenv(dotenv_path=".env")
+load_dotenv()  # carga .env si existe
 
-def get_db():
-    try:
-        # Configuración:
-        cfg = {
-            "host": os.environ["DB_HOST"],
-            "user": os.environ["DB_USER"],
-            "password": os.environ["DB_PASSWORD"],
-            "database": os.environ["DB_NAME"]
-        }
+def get_db_connection():
+    cfg = {
+        "host": os.environ.get("DB_HOST", "localhost"),
+        "user": os.environ.get("DB_USER", "root"),
+        "password": os.environ.get("DB_PASSWORD", ""),
+        "database": os.environ.get("DB_NAME", "peliculas_db"),
+    }
 
-        # Conexion a mysql
-        conn = mysql.connector.connect(**cfg)
-        if conn.is_connected():
-            print("Conexión establecida a mysql")
-            return conn
-    
-    except Error as e:
-        print("Error al conectarse ", e)
-        return None
+    conn = mysql.connector.connect(**cfg)
+    return conn
