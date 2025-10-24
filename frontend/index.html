@@ -1,33 +1,75 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <title>🎬 Películas</title>
-  <link rel="stylesheet" href="styles.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Películas</title>
+
+    <link
+        rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/bulma@1.0.4/css/bulma.min.css"
+    >
 </head>
 <body>
-  <h1>Lista de Películas</h1>
-  <button onclick="window.location.href='form.html'">Agregar Película</button>
-  
-  <table id="movies-table">
-    <thead>
-      <tr>
-        <th>ID</th>
-        <th>Título</th>
-        <th>Director</th>
-        <th>Año</th>
-        <th>Género</th>
-        <th>Rating</th>
-        <th>Imagen</th>
-        <th>Acciones</th>
-      </tr>
-    </thead>
-    <tbody></tbody>
-  </table>
+    <section class="section">
+        <div class="container">
+            <div class="level mb-4">
+                <div class="level-left">
+                    <h1 id="titulo-personalizado" 
+                        class="title is-3">Lista de películas
+                    </h1>
+                </div>
 
-  <script src="script.js"></script>
-  <script>
-    document.addEventListener("DOMContentLoaded", loadMovies);
-  </script>
+                <div class="level-right">
+                    <button class="button is-primary"
+                        onclick="window.location.href='form.html'">
+                        <span>Agregar película</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="box mb-4">
+                <div class="columns is-multiline">
+                    <div class="column is-one-quarter">
+                        <input placeholder="Rating"
+                            type="number" id="filter-rating" 
+                            class="input">
+                    </div>
+                    <div class="column is-one-quarter">
+                        <input placeholder="Genero"
+                            type="text" id="filter-genero" 
+                            class="input">
+                    </div>
+                    <div class="column is-one-quarter">
+                        <button id="filter-btn" class="button is-primary">
+                            <span>Filtrar</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="table-container box">
+                <table id="movies-table"
+                    class="table is-striped is-hoverable is-fullwidth">
+                    <thead>
+                        <!-- Primera fila de la tabla -->
+                        <tr>
+                            <th>ID</th>
+                            <th>Titulo</th>
+                            <th>Director</th>
+                            <th>Año</th>
+                            <th>Genero</th>
+                            <th>Rating</th>
+                            <th>Imagen</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <script src="main.js"></script>
 </body>
 </html>
