@@ -11,6 +11,7 @@ def get_db_connection():
         "user": os.environ.get("DB_USER", "root"),
         "password": os.environ.get("DB_PASSWORD", ""),
         "database": os.environ.get("DB_NAME", "peliculas_db"),
+        "port": int(os.environ["DB_PORT"])
     }
 
     conn = mysql.connector.connect(**cfg)
